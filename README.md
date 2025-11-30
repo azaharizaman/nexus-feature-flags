@@ -1,274 +1,896 @@
-# Nexus - Framework-Agnostic PHP Packages for ERP Systems
+# Nexus\FeatureFlags
 
-Nexus is a **package-only monorepo** containing 50+ atomic, reusable PHP packages for building Enterprise Resource Planning (ERP) systems. Each package is framework-agnostic, making them usable with Laravel, Symfony, Slim, or any other PHP framework.
+[![Latest Version](https://img.shields.io/packagist/v/nexus/feature-flags.svg?style=flat-square)](https://packagist.org/packages/nexus/feature-flags)
+[![Total Downloads](https://img.shields.io/packagist/dt/nexus/feature-flags.svg?style=flat-square)](https://packagist.org/packages/nexus/feature-flags)
+[![License](https://img.shields.io/packagist/l/nexus/feature-flags.svg?style=flat-square)](LICENSE)
 
-## 📖 The Philosophy: "Pure Business Logic, Framework Independent"
+Production-grade feature flag management with context-based evaluation, percentage rollout, tenant inheritance, and kill switches. Framework-agnostic pure PHP 8.3+ package designed for Laravel, Symfony, Slim, and vanilla PHP applications.
 
-The core philosophy of Nexus is **Framework Agnosticism**. Business logic should be portable and reusable across different frameworks and applications.
+## Features
 
-- **🎯 Pure Business Logic**: Packages contain only business rules and domain logic
-- **🔌 Interface-Driven**: All external dependencies defined as contracts
-- **📦 Atomic & Publishable**: Each package can be published independently to Packagist
-- **🧪 Testable**: Pure PHP logic with mockable dependencies
-- **🌍 Framework-Agnostic**: Works with Laravel, Symfony, or any PHP framework
+- 🎯 **Context-Based Evaluation** - 5 strategies: System-Wide, Percentage Rollout, Tenant List, User List, Custom
+- 🔐 **Fail-Closed Security** - Flags default to disabled when not found
+- 🏢 **Tenant Inheritance** - Tenant-specific flags override global defaults
+- 🚦 **Kill Switches** - Force ON/OFF overrides for emergency control
+- ⚡ **Performance Optimized** - Request-level memoization, bulk evaluation API
+- 🔍 **Checksum Validation** - Prevents stale cache serving
+- 📊 **Observability Ready** - Optional monitoring and audit logging integration
+- 🧪 **100% Type-Safe** - Strict types, native enums, immutable value objects
 
-## 🏗️ Architecture
+## Installation
 
-### 📦 Atomic Packages
-
-All packages in `packages/` are self-contained units of functionality designed to be:
-
-- **Framework-Agnostic:** Pure PHP 8.3+ logic with no framework dependencies
-- **Persistence-Agnostic:** No migrations or models - data access defined via interfaces
-- **Publishable:** Each package can be published independently to Packagist
-- **Contract-Driven:** All external dependencies injected as interfaces
-- **Stateless:** Long-term state externalized via storage interfaces
-
-## 📦 Available Packages (51 packages)
-
-### Core Infrastructure (8 packages)
-- **`Nexus\Tenant`** - Multi-tenancy context and isolation engine
-- **`Nexus\Setting`** - Global and tenant-specific configuration management
-- **`Nexus\Sequencing`** - Auto-numbering with atomic counter management
-- **`Nexus\Period`** - Fiscal period management and transaction validation
-- **`Nexus\AuditLogger`** - Timeline feeds and audit trails
-- **`Nexus\EventStream`** - Event sourcing for critical domains (Finance GL, Inventory)
-- **`Nexus\Uom`** - Unit of measurement management and conversion
-- **`Nexus\Monitoring`** - Observability with telemetry, health checks, alerting, SLO tracking
-
-### Identity & Security (3 packages)
-- **`Nexus\Identity`** - Authentication, RBAC, MFA, session/token management
-- **`Nexus\Crypto`** - Cryptographic operations and key management
-- **`Nexus\Audit`** - Advanced audit capabilities (extends AuditLogger)
-
-### Finance & Accounting (7 packages)
-- **`Nexus\Finance`** - General ledger, journal entries, double-entry bookkeeping
-- **`Nexus\Accounting`** - Financial statements, period close, consolidation
-- **`Nexus\Receivable`** - Customer invoicing, collections, credit control
-- **`Nexus\Payable`** - Vendor bills, payment processing, 3-way matching
-- **`Nexus\CashManagement`** - Bank reconciliation, cash flow forecasting
-- **`Nexus\Budget`** - Budget planning and variance tracking
-- **`Nexus\Assets`** - Fixed asset management, depreciation
-- **`Nexus\Currency`** - Multi-currency management and exchange rates
-
-### Sales & Operations (6 packages)
-- **`Nexus\Sales`** - Quotation-to-order lifecycle, pricing engine
-- **`Nexus\Inventory`** - Stock management with lot/serial tracking
-- **`Nexus\Warehouse`** - Warehouse operations and bin management
-- **`Nexus\Procurement`** - Purchase requisitions, POs, goods receipt
-- **`Nexus\Manufacturing`** - Bill of materials, work orders, MRP
-- **`Nexus\Product`** - Product catalog, pricing, categorization
-
-### Human Resources (3 packages)
-- **`Nexus\Hrm`** - Leave, attendance, performance reviews
-- **`Nexus\Payroll`** - Payroll processing framework
-- **`Nexus\PayrollMysStatutory`** - Malaysian statutory calculations (EPF, SOCSO, PCB)
-
-### Customer & Partner Management (4 packages)
-- **`Nexus\Party`** - Customers, vendors, employees, contacts
-- **`Nexus\Crm`** - Leads, opportunities, sales pipeline
-- **`Nexus\Marketing`** - Campaigns, A/B testing, GDPR compliance
-- **`Nexus\FieldService`** - Work orders, technicians, service contracts
-
-### Integration & Automation (7 packages)
-- **`Nexus\Connector`** - Integration hub with circuit breaker, OAuth
-- **`Nexus\Workflow`** - Process automation, state machines
-- **`Nexus\Notifier`** - Multi-channel notifications (email, SMS, push, in-app)
-- **`Nexus\Scheduler`** - Task scheduling and job management
-- **`Nexus\DataProcessor`** - OCR, ETL interfaces (interface-only package)
-- **`Nexus\Intelligence`** - AI-assisted automation and predictions
-- **`Nexus\Geo`** - Geocoding, geofencing, routing
-- **`Nexus\Routing`** - Route optimization and caching
-
-### Reporting & Data (5 packages)
-- **`Nexus\Reporting`** - Report definition and execution engine
-- **`Nexus\Export`** - Multi-format export (PDF, Excel, CSV, JSON)
-- **`Nexus\Import`** - Data import with validation and transformation
-- **`Nexus\Analytics`** - Business intelligence, predictive models
-- **`Nexus\Document`** - Document management with versioning
-
-### Compliance & Governance (4 packages)
-- **`Nexus\Compliance`** - Process enforcement, operational compliance
-- **`Nexus\Statutory`** - Reporting compliance, statutory filing
-- **`Nexus\Backoffice`** - Company structure, offices, departments
-- **`Nexus\OrgStructure`** - Organizational hierarchy management
-
-### Support & Utilities (3 packages)
-- **`Nexus\Storage`** - File storage abstraction layer
-- **`Nexus\ProjectManagement`** - Projects, tasks, timesheets, milestones
-- **`Nexus\FeatureFlags`** - Feature flag management
-
-## 🛠️ Getting Started
-
-### Prerequisites
-- PHP 8.3+
-- Composer
-
-### Installation
-
-1. **Clone the repository:**
-   ```bash
-   git clone <repository-url> nexus
-   cd nexus
-   ```
-
-2. **Install Dependencies:**
-   ```bash
-   composer install
-   ```
-
-3. **Explore Packages:**
-   ```bash
-   # Browse available packages
-   ls packages/
-   
-   # Read package documentation
-   cat packages/Tenant/README.md
-   cat packages/Finance/README.md
-   ```
-
-## 📚 Usage
-
-### Installing a Package
-
-Each package can be installed independently in your PHP application:
+### For Laravel
 
 ```bash
-# In your Laravel, Symfony, or other PHP application
-composer require nexus/tenant
-composer require nexus/finance
-composer require nexus/receivable
+composer require nexus/feature-flags
 ```
 
-### Implementing Package Contracts
+The service provider will be auto-discovered. Publish the migration:
 
-Packages define interfaces, your application provides implementations:
+```bash
+php artisan vendor:publish --tag=feature-flags-migrations
+php artisan migrate
+```
+
+### For Symfony
+
+```bash
+composer require nexus/feature-flags
+```
+
+Register services in `config/services.yaml`:
+
+```yaml
+services:
+    Nexus\FeatureFlags\Contracts\FlagRepositoryInterface:
+        class: Your\Custom\FlagRepository
+    
+    Nexus\FeatureFlags\Contracts\FeatureFlagManagerInterface:
+        class: Nexus\FeatureFlags\Services\FeatureFlagManager
+        arguments:
+            - '@Nexus\FeatureFlags\Contracts\FlagRepositoryInterface'
+            - '@Nexus\FeatureFlags\Core\Engine\DefaultFlagEvaluator'
+            - '@logger'
+```
+
+### For Vanilla PHP
+
+```bash
+composer require nexus/feature-flags
+```
 
 ```php
-// Package defines the interface
-namespace Nexus\Tenant\Contracts;
+use Nexus\FeatureFlags\Services\FeatureFlagManager;
+use Nexus\FeatureFlags\Core\Engine\DefaultFlagEvaluator;
+use Nexus\FeatureFlags\Core\Repository\InMemoryFlagRepository;
+use Psr\Log\NullLogger;
 
-interface TenantRepositoryInterface
+$repository = new InMemoryFlagRepository();
+$evaluator = new DefaultFlagEvaluator(new PercentageHasher());
+$manager = new FeatureFlagManager($repository, $evaluator, new NullLogger());
+```
+
+## Quick Start
+
+### Basic Usage
+
+```php
+use Nexus\FeatureFlags\Contracts\FeatureFlagManagerInterface;
+
+class MyController
 {
-    public function findById(string $id): ?TenantInterface;
-    public function save(TenantInterface $tenant): void;
-}
-
-// Your Laravel application implements it
-namespace App\Repositories;
-
-use Nexus\Tenant\Contracts\TenantRepositoryInterface;
-use Nexus\Tenant\Contracts\TenantInterface;
-use App\Models\Tenant;
-
-final class EloquentTenantRepository implements TenantRepositoryInterface
-{
-    public function findById(string $id): ?TenantInterface
-    {
-        return Tenant::find($id);
-    }
+    public function __construct(
+        private readonly FeatureFlagManagerInterface $flags
+    ) {}
     
-    public function save(TenantInterface $tenant): void
+    public function index(): Response
     {
-        Tenant::updateOrCreate(['id' => $tenant->getId()], [
-            'name' => $tenant->getName(),
-            'status' => $tenant->getStatus()->value,
-        ]);
+        if ($this->flags->isEnabled('new_dashboard')) {
+            return $this->renderNewDashboard();
+        }
+        
+        return $this->renderOldDashboard();
     }
 }
+```
 
-// Bind in service provider
-$this->app->bind(
-    TenantRepositoryInterface::class,
-    EloquentTenantRepository::class
+### Context-Based Evaluation
+
+```php
+use Nexus\FeatureFlags\ValueObjects\EvaluationContext;
+
+$context = new EvaluationContext(
+    tenantId: 'tenant-123',
+    userId: 'user-456',
+    customAttributes: ['plan' => 'premium']
+);
+
+if ($this->flags->isEnabled('advanced_analytics', $context)) {
+    // Show premium feature
+}
+```
+
+### Bulk Evaluation (Prevents N+1 Queries)
+
+```php
+$context = EvaluationContext::fromArray([
+    'tenant_id' => 'tenant-123',
+    'user_id' => 'user-456',
+]);
+
+$flags = $this->flags->evaluateMany([
+    'new_dashboard',
+    'advanced_analytics',
+    'beta_features',
+], $context);
+
+// Returns: ['new_dashboard' => true, 'advanced_analytics' => false, 'beta_features' => true]
+```
+
+## Flag Strategies
+
+### 1. System-Wide
+
+Enabled/disabled for all users globally.
+
+```php
+use Nexus\FeatureFlags\ValueObjects\FlagDefinition;
+use Nexus\FeatureFlags\Enums\FlagStrategy;
+
+$flag = new FlagDefinition(
+    name: 'maintenance_mode',
+    enabled: true,
+    strategy: FlagStrategy::SYSTEM_WIDE,
+    value: null
 );
 ```
 
-### Using Package Services
+### 2. Percentage Rollout
+
+Gradually roll out to a percentage of users based on stable identifier.
 
 ```php
-use Nexus\Tenant\Contracts\TenantContextInterface;
-use Nexus\Finance\Contracts\GeneralLedgerManagerInterface;
+$flag = new FlagDefinition(
+    name: 'new_checkout',
+    enabled: true,
+    strategy: FlagStrategy::PERCENTAGE_ROLLOUT,
+    value: 25 // 25% of users
+);
 
-class InvoiceController
+// Requires stable identifier in context
+$context = new EvaluationContext(userId: 'user-123');
+$enabled = $manager->isEnabled('new_checkout', $context);
+```
+
+### 3. Tenant List
+
+Enabled only for specific tenants.
+
+```php
+$flag = new FlagDefinition(
+    name: 'premium_module',
+    enabled: true,
+    strategy: FlagStrategy::TENANT_LIST,
+    value: ['tenant-abc', 'tenant-xyz']
+);
+
+$context = new EvaluationContext(tenantId: 'tenant-abc');
+$enabled = $manager->isEnabled('premium_module', $context); // true
+```
+
+### 4. User List
+
+Enabled only for specific users.
+
+```php
+$flag = new FlagDefinition(
+    name: 'beta_tester_access',
+    enabled: true,
+    strategy: FlagStrategy::USER_LIST,
+    value: ['user-alice', 'user-bob']
+);
+```
+
+### 5. Custom Evaluator (Advanced)
+
+Use custom business logic for complex targeting.
+
+```php
+use Nexus\FeatureFlags\Contracts\CustomEvaluatorInterface;
+use Nexus\FeatureFlags\ValueObjects\EvaluationContext;
+
+class PremiumMalaysianUsersEvaluator implements CustomEvaluatorInterface
+{
+    public function evaluate(EvaluationContext $context): bool
+    {
+        $plan = $context->customAttributes['plan'] ?? null;
+        $country = $context->customAttributes['country'] ?? null;
+        
+        return $plan === 'premium' && $country === 'MY';
+    }
+}
+
+$flag = new FlagDefinition(
+    name: 'malaysia_premium_features',
+    enabled: true,
+    strategy: FlagStrategy::CUSTOM,
+    value: PremiumMalaysianUsersEvaluator::class
+);
+```
+
+## Override Precedence (Kill Switches)
+
+Force flags ON or OFF regardless of strategy for emergency control.
+
+```php
+use Nexus\FeatureFlags\Enums\FlagOverride;
+
+// Emergency kill switch - disables feature even if enabled=true
+$flag = new FlagDefinition(
+    name: 'problematic_feature',
+    enabled: true,
+    strategy: FlagStrategy::SYSTEM_WIDE,
+    value: null,
+    override: FlagOverride::FORCE_OFF
+);
+
+$manager->isEnabled('problematic_feature'); // Always returns false
+
+// Force enable during testing
+$flag = new FlagDefinition(
+    name: 'test_feature',
+    enabled: false,
+    strategy: FlagStrategy::SYSTEM_WIDE,
+    value: null,
+    override: FlagOverride::FORCE_ON
+);
+
+$manager->isEnabled('test_feature'); // Always returns true
+```
+
+## Tenant Inheritance
+
+Tenant-specific flags automatically override global defaults.
+
+```php
+// Global default: disabled for all tenants
+$globalFlag = new FlagDefinition(
+    name: 'new_reporting',
+    enabled: false,
+    strategy: FlagStrategy::SYSTEM_WIDE,
+    value: null
+    // tenant_id: null
+);
+
+// Enable only for tenant-123
+$tenantFlag = new FlagDefinition(
+    name: 'new_reporting',
+    enabled: true,
+    strategy: FlagStrategy::SYSTEM_WIDE,
+    value: null
+    // tenant_id: 'tenant-123'
+);
+
+// Tenant-123 sees enabled, all others see disabled
+$context = new EvaluationContext(tenantId: 'tenant-123');
+$manager->isEnabled('new_reporting', $context); // true
+
+$context = new EvaluationContext(tenantId: 'tenant-456');
+$manager->isEnabled('new_reporting', $context); // false (uses global)
+```
+
+## Name Validation
+
+Flag names must follow strict pattern for consistency and safety:
+
+- **Pattern:** `/^[a-z0-9_\.]{1,100}$/`
+- **Valid:** `new_feature`, `module.analytics`, `beta_v2.checkout`
+- **Invalid:** `NewFeature` (uppercase), `feature-name` (hyphens), `very_long_name...` (>100 chars)
+
+```php
+// Valid
+new FlagDefinition(name: 'analytics.dashboard.v2', ...);
+
+// Throws InvalidFlagDefinitionException
+new FlagDefinition(name: 'Invalid-Name', ...);
+```
+
+## Testing
+
+```bash
+# Run all tests
+composer test
+
+# Run with coverage
+composer test -- --coverage-html coverage
+
+# Run only unit tests
+composer test -- --testsuite=Unit
+
+# Run only integration tests
+composer test -- --testsuite=Integration
+```
+
+## Framework Integration Examples
+
+### Laravel Setup
+
+After installation, the `FeatureFlagServiceProvider` auto-registers. Configure in `config/feature-flags.php`:
+
+```php
+return [
+    'cache_store' => env('FEATURE_FLAGS_CACHE_STORE', 'redis'),
+    'cache_ttl' => env('FEATURE_FLAGS_CACHE_TTL', 300), // 5 minutes
+    'default_if_not_found' => env('FEATURE_FLAGS_DEFAULT_IF_NOT_FOUND', false),
+    'enable_monitoring' => env('FEATURE_FLAGS_ENABLE_MONITORING', true),
+];
+```
+
+**API Usage:**
+
+```php
+// In controllers
+public function __construct(
+    private readonly FeatureFlagManagerInterface $flags
+) {}
+
+public function show(Request $request): JsonResponse
+{
+    $context = [
+        'tenantId' => $request->user()->tenant_id,
+        'userId' => $request->user()->id,
+    ];
+    
+    if ($this->flags->isEnabled('premium.analytics', $context)) {
+        return response()->json(['data' => $this->getPremiumAnalytics()]);
+    }
+    
+    return response()->json(['data' => $this->getBasicAnalytics()]);
+}
+```
+
+**Blade Directives (Optional Custom Helper):**
+
+```php
+// In AppServiceProvider
+Blade::directive('featureFlag', function ($expression) {
+    return "<?php if(app(FeatureFlagManagerInterface::class)->isEnabled($expression)): ?>";
+});
+
+Blade::directive('endfeatureFlag', function () {
+    return "<?php endif; ?>";
+});
+```
+
+```blade
+@featureFlag('new.ui')
+    <div class="new-dashboard">New UI!</div>
+@endfeatureFlag
+@else
+    <div class="old-dashboard">Legacy UI</div>
+@endif
+```
+
+### Symfony Setup
+
+**services.yaml:**
+
+```yaml
+services:
+    # Repository (choose one)
+    Nexus\FeatureFlags\Contracts\FlagRepositoryInterface:
+        class: App\FeatureFlags\DoctrineFlagRepository
+        arguments:
+            - '@doctrine.orm.entity_manager'
+    
+    # Cache adapter
+    Nexus\FeatureFlags\Contracts\FlagCacheInterface:
+        class: App\FeatureFlags\SymfonyCacheAdapter
+        arguments:
+            - '@cache.app'
+    
+    # Core services
+    Nexus\FeatureFlags\Core\Engine\PercentageHasher: ~
+    
+    Nexus\FeatureFlags\Core\Engine\DefaultFlagEvaluator:
+        arguments:
+            - '@Nexus\FeatureFlags\Core\Engine\PercentageHasher'
+    
+    Nexus\FeatureFlags\Services\FeatureFlagManager:
+        arguments:
+            - '@Nexus\FeatureFlags\Contracts\FlagRepositoryInterface'
+            - '@Nexus\FeatureFlags\Core\Engine\DefaultFlagEvaluator'
+            - '@logger'
+    
+    # Alias for type-hinting
+    Nexus\FeatureFlags\Contracts\FeatureFlagManagerInterface:
+        alias: Nexus\FeatureFlags\Services\FeatureFlagManager
+```
+
+**Controller Usage:**
+
+```php
+use Nexus\FeatureFlags\Contracts\FeatureFlagManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
+class DashboardController extends AbstractController
 {
     public function __construct(
-        private readonly TenantContextInterface $tenantContext,
-        private readonly GeneralLedgerManagerInterface $glManager
+        private readonly FeatureFlagManagerInterface $flags
     ) {}
     
-    public function store(Request $request)
+    #[Route('/dashboard')]
+    public function index(RequestStack $requestStack): Response
     {
-        $tenantId = $this->tenantContext->getCurrentTenantId();
+        $context = [
+            'userId' => $this->getUser()?->getId(),
+            'tenantId' => $requestStack->getCurrentRequest()?->attributes->get('tenant_id'),
+        ];
         
-        // Use package business logic
-        $this->glManager->postJournalEntry($journalEntry);
+        return $this->render('dashboard/index.html.twig', [
+            'use_new_ui' => $this->flags->isEnabled('dashboard.v2', $context),
+        ]);
     }
 }
 ```
 
-## 🏛️ Architectural Principles
+**Twig Extension (Optional):**
 
-### 1. Framework Agnosticism
-- No Laravel, Symfony, or framework-specific code in packages
-- Use PSR interfaces (`psr/log`, `psr/http-client`, `psr/cache`)
-- All framework integration happens in consuming applications
+```php
+namespace App\Twig;
 
-### 2. Contract-Driven Design
-- Packages define needs via interfaces
-- Consuming applications provide implementations
-- Dependency injection for all external dependencies
+use Nexus\FeatureFlags\Contracts\FeatureFlagManagerInterface;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 
-### 3. Stateless Design
-- No session state in package classes
-- Long-term state externalized via storage interfaces
-- Horizontally scalable by design
+class FeatureFlagExtension extends AbstractExtension
+{
+    public function __construct(
+        private readonly FeatureFlagManagerInterface $flags
+    ) {}
+    
+    public function getFunctions(): array
+    {
+        return [
+            new TwigFunction('feature_enabled', [$this, 'isEnabled']),
+        ];
+    }
+    
+    public function isEnabled(string $flagName, array $context = []): bool
+    {
+        return $this->flags->isEnabled($flagName, $context);
+    }
+}
+```
 
-### 4. Modern PHP Standards
-- PHP 8.3+ with strict types
-- Constructor property promotion
-- Readonly properties for dependencies
-- Native enums for fixed value sets
-- Match expressions over switch statements
+```twig
+{% if feature_enabled('new.checkout') %}
+    <div class="new-checkout">Enhanced Checkout</div>
+{% else %}
+    <div class="old-checkout">Classic Checkout</div>
+{% endif %}
+```
+
+### Slim Framework Setup
+
+```php
+use Nexus\FeatureFlags\Services\FeatureFlagManager;
+use Nexus\FeatureFlags\Core\Engine\DefaultFlagEvaluator;
+use Nexus\FeatureFlags\Core\Repository\InMemoryFlagRepository;
+use Psr\Container\ContainerInterface;
+use Slim\Factory\AppFactory;
+
+$container = new \DI\Container();
+
+// Register feature flag services
+$container->set(FlagRepositoryInterface::class, function() {
+    return new InMemoryFlagRepository(); // Or your custom implementation
+});
+
+$container->set(FeatureFlagManagerInterface::class, function(ContainerInterface $c) {
+    return new FeatureFlagManager(
+        $c->get(FlagRepositoryInterface::class),
+        new DefaultFlagEvaluator(new PercentageHasher()),
+        $c->get(LoggerInterface::class)
+    );
+});
+
+AppFactory::setContainer($container);
+$app = AppFactory::create();
+
+// Use in routes
+$app->get('/dashboard', function (Request $request, Response $response) use ($container) {
+    $flags = $container->get(FeatureFlagManagerInterface::class);
+    
+    $context = [
+        'userId' => $request->getAttribute('user_id'),
+    ];
+    
+    if ($flags->isEnabled('beta.features', $context)) {
+        return $response->withJson(['version' => 'beta']);
+    }
+    
+    return $response->withJson(['version' => 'stable']);
+});
+```
+
+### Standalone PHP Setup
+
+```php
+<?php
+
+require 'vendor/autoload.php';
+
+use Nexus\FeatureFlags\Services\FeatureFlagManager;
+use Nexus\FeatureFlags\Core\Engine\DefaultFlagEvaluator;
+use Nexus\FeatureFlags\Core\Engine\PercentageHasher;
+use Nexus\FeatureFlags\Core\Repository\InMemoryFlagRepository;
+use Nexus\FeatureFlags\ValueObjects\FlagDefinition;
+use Nexus\FeatureFlags\Enums\FlagStrategy;
+use Psr\Log\NullLogger;
+
+// Setup repository and add flags
+$repository = new InMemoryFlagRepository();
+
+$repository->save(FlagDefinition::create(
+    name: 'new.feature',
+    enabled: true,
+    strategy: FlagStrategy::PERCENTAGE_ROLLOUT,
+    value: 50 // 50% rollout
+));
+
+// Create manager
+$manager = new FeatureFlagManager(
+    repository: $repository,
+    evaluator: new DefaultFlagEvaluator(new PercentageHasher()),
+    logger: new NullLogger()
+);
+
+// Evaluate flags
+$context = ['userId' => 'user-12345'];
+
+if ($manager->isEnabled('new.feature', $context)) {
+    echo "You're in the 50% rollout group!\n";
+} else {
+    echo "Not yet enabled for you.\n";
+}
+```
+
+## Compliance & Audit Trail
+
+For regulatory compliance (SOX, GDPR, etc.), the package provides optional audit interfaces that enable complete change tracking and historical state queries.
+
+### Audit Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    FeatureFlagManager                           │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐ │
+│  │ FlagRepository  │  │ FlagAuditChange │  │ FlagAuditQuery  │ │
+│  │   Interface     │  │   Interface     │  │   Interface     │ │
+│  └────────┬────────┘  └────────┬────────┘  └────────┬────────┘ │
+└───────────│───────────────────│───────────────────│────────────┘
+            │                   │                   │
+  ┌─────────▼────────┐ ┌───────▼────────┐ ┌───────▼────────┐
+  │ Database/Redis   │ │ Nexus\Audit    │ │ Nexus\Event    │
+  │ Implementation   │ │ Logger         │ │ Stream         │
+  └──────────────────┘ └────────────────┘ └────────────────┘
+```
+
+### FlagAuditChangeInterface (Write Audit)
+
+Records all feature flag modifications using `Nexus\AuditLogger`:
+
+```php
+use Nexus\FeatureFlags\Contracts\FlagAuditChangeInterface;
+use Nexus\FeatureFlags\Enums\AuditAction;
+use Nexus\AuditLogger\Contracts\AuditLogRepositoryInterface;
+
+// Application layer implementation
+final readonly class FeatureFlagAuditLogger implements FlagAuditChangeInterface
+{
+    public function __construct(
+        private AuditLogRepositoryInterface $auditLogger,
+        private TenantContextInterface $tenantContext
+    ) {}
+
+    public function recordChange(
+        string $flagName,
+        AuditAction $action,
+        ?string $userId,
+        ?array $before,
+        ?array $after,
+        array $metadata = []
+    ): void {
+        $this->auditLogger->create([
+            'log_name' => 'feature_flags',
+            'subject_type' => 'feature_flag',
+            'subject_id' => $flagName,
+            'causer_type' => 'user',
+            'causer_id' => $userId,
+            'event' => $action->value,
+            'description' => $action->getDescription(),
+            'properties' => [
+                'before' => $before,
+                'after' => $after,
+                ...$metadata,
+            ],
+            'level' => $action->isCritical() ? 4 : 2, // Critical = 4, Medium = 2
+            'tenant_id' => $this->tenantContext->getCurrentTenantId(),
+        ]);
+    }
+
+    public function recordBatchChange(
+        AuditAction $action,
+        ?string $userId,
+        array $changes,
+        array $metadata = []
+    ): void {
+        // Generate batch ID using your preferred method:
+        // - Symfony: (new \Symfony\Component\Uid\Ulid())->__toString()
+        // - ramsey/uuid: (string) \Ramsey\Uuid\Uuid::uuid7()
+        // - Laravel: (string) Str::ulid()
+        $batchId = $this->generateBatchId();
+        
+        foreach ($changes as $flagName => $change) {
+            $this->recordChange(
+                $flagName,
+                $action,
+                $userId,
+                $change['before'],
+                $change['after'],
+                [...$metadata, 'batch_id' => $batchId]
+            );
+        }
+    }
+
+    private function generateBatchId(): string
+    {
+        // Implement using your preferred ULID/UUID library
+        return (new \Symfony\Component\Uid\Ulid())->__toString();
+    }
+}
+```
+
+### FlagAuditQueryInterface (Read Audit)
+
+Query historical flag states using `Nexus\EventStream` for compliance audits:
+
+```php
+use Nexus\FeatureFlags\Contracts\FlagAuditQueryInterface;
+use Nexus\FeatureFlags\Contracts\FlagAuditRecordInterface;
+use Nexus\FeatureFlags\Enums\AuditAction;
+use Nexus\EventStream\Contracts\EventStoreInterface;
+
+// Application layer implementation
+final readonly class FeatureFlagAuditQuery implements FlagAuditQueryInterface
+{
+    public function __construct(
+        private EventStoreInterface $eventStore
+    ) {}
+
+    public function getHistory(
+        string $flagName,
+        ?string $tenantId = null,
+        int $limit = 100,
+        int $offset = 0
+    ): array {
+        return $this->eventStore->query(
+            filters: [
+                'aggregate_id' => ['operator' => '=', 'value' => "flag:{$flagName}"],
+            ],
+            inFilters: [],
+            orderByField: 'occurred_at',
+            orderDirection: 'desc',
+            limit: $limit,
+            cursorData: null
+        );
+    }
+
+    public function getStateAt(
+        string $flagName,
+        DateTimeImmutable $timestamp,
+        ?string $tenantId = null
+    ): ?array {
+        // Replay events up to timestamp to reconstruct state
+        $events = $this->eventStore->query(
+            filters: [
+                'aggregate_id' => ['operator' => '=', 'value' => "flag:{$flagName}"],
+                'occurred_at' => ['operator' => '<=', 'value' => $timestamp->format('Y-m-d H:i:s')],
+            ],
+            inFilters: [],
+            orderByField: 'occurred_at',
+            orderDirection: 'asc',
+            limit: 10000
+        );
+        
+        if (empty($events)) {
+            return null;
+        }
+        
+        // Reconstruct state by replaying events
+        return $this->reconstructState($events);
+    }
+
+    public function getCriticalChanges(
+        ?string $tenantId = null,
+        ?DateTimeImmutable $since = null,
+        int $limit = 500
+    ): array {
+        $filters = [];
+        
+        if ($since !== null) {
+            $filters['occurred_at'] = ['operator' => '>=', 'value' => $since->format('Y-m-d H:i:s')];
+        }
+        
+        $criticalActions = [
+            AuditAction::FORCE_DISABLED->value,
+            AuditAction::FORCE_ENABLED->value,
+            AuditAction::DELETED->value,
+            AuditAction::OVERRIDE_CHANGED->value,
+        ];
+        
+        return $this->eventStore->query(
+            filters: $filters,
+            inFilters: ['event_type' => $criticalActions],
+            orderByField: 'occurred_at',
+            orderDirection: 'desc',
+            limit: $limit
+        );
+    }
+    
+    // ... other methods
+}
+```
+
+### Using AuditableFlagRepository
+
+The `AuditableFlagRepository` decorator automatically records all changes:
+
+```php
+use Nexus\FeatureFlags\Services\AuditableFlagRepository;
+
+// Wrap your repository for automatic audit logging
+$auditableRepo = new AuditableFlagRepository(
+    repository: $baseRepository,
+    auditChange: $auditChangeLogger,
+    userId: $currentUser->getId()
+);
+
+// Set tenant context
+$auditableRepo = $auditableRepo->withTenantId($tenantId);
+
+// Now all save/delete operations are automatically audited
+$auditableRepo->save($flag); // Records CREATED or appropriate action
+$auditableRepo->delete('old_flag', $tenantId); // Records DELETED
+```
+
+### Audit Actions
+
+The `AuditAction` enum tracks all possible flag modifications:
+
+| Action | Description | Critical |
+|--------|-------------|----------|
+| `CREATED` | Flag was created | No |
+| `UPDATED` | Flag was updated (generic) | No |
+| `DELETED` | Flag was deleted | **Yes** |
+| `ENABLED_CHANGED` | Flag enabled state toggled | No |
+| `STRATEGY_CHANGED` | Evaluation strategy changed | No |
+| `OVERRIDE_CHANGED` | Override state changed | **Yes** |
+| `FORCE_ENABLED` | FORCE_ON override applied | **Yes** |
+| `FORCE_DISABLED` | FORCE_OFF override (kill switch) | **Yes** |
+| `OVERRIDE_CLEARED` | Override removed | No |
+| `ROLLOUT_CHANGED` | Percentage rollout changed | No |
+| `TARGET_LIST_CHANGED` | Tenant/user list changed | No |
+
+### Checking Audit Availability
+
+```php
+// Check if audit capabilities are configured
+if ($manager->hasAuditChange()) {
+    // Audit change logging is available
+}
+
+if ($manager->hasAuditQuery()) {
+    // Historical queries are available
+    $query = $manager->getAuditQuery();
+    
+    // Get flag history
+    $history = $query->getHistory('payment_v2', 'tenant-123');
+    
+    // Compliance audit: What was the state during an incident?
+    $stateAtIncident = $query->getStateAt(
+        'payment_v2',
+        new DateTimeImmutable('2024-11-15 14:30:00'),
+        'tenant-123'
+    );
+    
+    // Get all critical changes this month
+    $criticalChanges = $query->getCriticalChanges(
+        tenantId: 'tenant-123',
+        since: new DateTimeImmutable('first day of this month')
+    );
+}
+```
+
+### Laravel Service Provider Setup
+
+```php
+// AppServiceProvider.php
+public function register(): void
+{
+    // Register audit change logger (uses Nexus\AuditLogger)
+    $this->app->singleton(FlagAuditChangeInterface::class, function ($app) {
+        return new FeatureFlagAuditLogger(
+            $app->make(AuditLogRepositoryInterface::class),
+            $app->make(TenantContextInterface::class)
+        );
+    });
+
+    // Register audit query (uses Nexus\EventStream)
+    $this->app->singleton(FlagAuditQueryInterface::class, function ($app) {
+        return new FeatureFlagAuditQuery(
+            $app->make(EventStoreInterface::class)
+        );
+    });
+
+    // Register manager with audit support
+    $this->app->singleton(FeatureFlagManagerInterface::class, function ($app) {
+        return new FeatureFlagManager(
+            $app->make(FlagRepositoryInterface::class),
+            $app->make(FlagEvaluatorInterface::class),
+            $app->make(LoggerInterface::class),
+            $app->make(FlagAuditChangeInterface::class), // Optional
+            $app->make(FlagAuditQueryInterface::class)   // Optional
+        );
+    });
+}
+```
+
+## Requirements
+
+- PHP 8.3+
+- PSR-3 Logger implementation
+- (Optional) Nexus\Monitoring for metrics
+- (Optional) Nexus\AuditLogger for change audit trail
+- (Optional) Nexus\EventStream for historical state queries
 
 ## 📖 Documentation
 
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Architectural guidelines and rules
-- **[docs/NEXUS_PACKAGES_REFERENCE.md](docs/NEXUS_PACKAGES_REFERENCE.md)** - Complete package capabilities reference
-- **[.github/copilot-instructions.md](.github/copilot-instructions.md)** - Development guidelines
-- **Package READMEs** - Individual package documentation (e.g., `packages/Finance/README.md`)
+### Core Documentation
+- **[Getting Started Guide](docs/getting-started.md)** - Quick start with prerequisites, 5 strategies, and troubleshooting
+- **[API Reference](docs/api-reference.md)** - Complete interface and service documentation
+- **[Integration Guide](docs/integration-guide.md)** - Laravel and Symfony integration examples
 
-## 🤝 Contributing
+### Implementation Details
+- **[Requirements](REQUIREMENTS.md)** - Complete requirements tracking with status
+- **[Implementation Summary](IMPLEMENTATION_SUMMARY.md)** - Progress metrics and design decisions
+- **[Test Suite Summary](TEST_SUITE_SUMMARY.md)** - Test coverage and testing strategy
+- **[Valuation Matrix](VALUATION_MATRIX.md)** - Package valuation metrics ($145K value, 1,364% ROI)
 
-Please refer to [ARCHITECTURE.md](ARCHITECTURE.md) for detailed architectural guidelines.
+### Code Examples
+- **[Basic Usage Examples](docs/examples/basic-usage.php)** - Simple feature flag operations
+- **[Advanced Usage Examples](docs/examples/advanced-usage.php)** - Custom evaluators, percentage analysis
 
-### Key Rules:
-1. **Packages must be framework-agnostic** - No Laravel, Symfony, or framework-specific code
-2. **Packages define persistence needs via Contracts** - No migrations or models in packages
-3. **All dependencies must be interfaces** - Use dependency injection
-4. **Modern PHP 8.3+ standards** - Use latest language features
-5. **Consult NEXUS_PACKAGES_REFERENCE.md** - Avoid reimplementing existing functionality
+## Quick Links
 
-### Creating a New Package
+- **Package Reference**: [`docs/NEXUS_PACKAGES_REFERENCE.md`](../../docs/NEXUS_PACKAGES_REFERENCE.md)
+- **Architecture Overview**: [`ARCHITECTURE.md`](../../ARCHITECTURE.md)
+- **Coding Standards**: [`.github/copilot-instructions.md`](../../.github/copilot-instructions.md)
 
-1. Create `packages/NewPackage/` directory
-2. Run `composer init` (require `"php": "^8.3"`)
-3. Define PSR-4 autoloader: `"Nexus\\NewPackage\\": "src/"`
-4. Create `src/Contracts/`, `src/Services/`, `src/Exceptions/`
-5. Write comprehensive `README.md` with usage examples
-6. Add MIT `LICENSE` file
-7. Update root `composer.json` repositories array
+## Contributing
 
-## 📄 License
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## License
 
-## 🔗 Links
+The MIT License (MIT). Please see [License File](LICENSE) for more information.
 
-- **Package Reference Guide**: [docs/NEXUS_PACKAGES_REFERENCE.md](docs/NEXUS_PACKAGES_REFERENCE.md)
-- **Architecture Documentation**: [ARCHITECTURE.md](ARCHITECTURE.md)
-- **Implementation Summaries**: `docs/*_IMPLEMENTATION_SUMMARY.md`
+## Security
 
----
+If you discover any security-related issues, please email security@nexus.local instead of using the issue tracker.
 
-**Nexus** - Building the future of modular ERP systems with framework-agnostic PHP packages.
+## Credits
+
+- [Nexus Team](https://github.com/nexus)
+- [All Contributors](../../contributors)
